@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KWB Owner Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Fraunces:ital,wght@0,300;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0d1b2a;
+    --navy-2: #152233;
+    --navy-3: #1e3048;
+    --green: #4ade80;
+    --green-dim: #22c55e;
+    --white: #f8fafc;
+    --muted: #94a3b8;
+    --border: rgba(255,255,255,0.08);
+    --card: rgba(255,255,255,0.04);
+    --card-hover: rgba(255,255,255,0.07);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--navy);
+    color: var(--white);
+    min-height: 100vh;
+  }
+
+  /* ─── TOP NAV ─── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 32px; height: 64px;
+    background: rgba(13,27,42,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'Fraunces', serif; font-weight: 600; font-size: 18px;
+    letter-spacing: -0.3px;
+  }
+
+  .nav-logo .k {
+    width: 34px; height: 34px; border-radius: 8px;
+    background: linear-gradient(135deg, #1e3048, #152233);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: var(--green);
+  }
+
+  .nav-logo span { color: var(--green); }
+
+  .nav-right { display: flex; align-items: center; gap: 16px; }
+
+  .badge {
+    background: rgba(74,222,128,0.12);
+    color: var(--green);
+    border: 1px solid rgba(74,222,128,0.25);
+    padding: 4px 10px; border-radius: 20px;
+    font-size: 12px; font-weight: 500;
+  }
+
+  .avatar {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--navy-3), var(--navy-2));
+    border: 2px solid var(--green);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    color: var(--green);
+  }
+
+  /* ─── SIDEBAR ─── */
+  .layout { display: flex; padding-top: 64px; min-height: 100vh; }
+
+  sidebar {
+    width: 240px; flex-shrink: 0;
+    background: var(--navy-2);
+    border-right: 1px solid var(--border);
+    padding: 24px 16px;
+    position: fixed; top: 64px; left: 0; bottom: 0;
+    overflow-y: auto;
+  }
+
+  .sidebar-section { margin-bottom: 32px; }
+  .sidebar-label {
+    font-size: 10px; font-weight: 600; letter-spacing: 1.2px;
+    text-transform: uppercase; color: var(--muted);
+    padding: 0 12px; margin-bottom: 8px;
+  }
+
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 10px;
+    font-size: 14px; font-weight: 400; color: var(--muted);
+    cursor: pointer; transition: all 0.15s;
+    margin-bottom: 2px;
+  }
+
+  .nav-item:hover { background: var(--card); color: var(--white); }
+  .nav-item.active { background: rgba(74,222,128,0.1); color: var(--green); font-weight: 500; }
+  .nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
+
+  .nav-item .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--green); margin-left: auto;
+  }
+
+  /* ─── MAIN CONTENT ─── */
+  main {
+    flex: 1; margin-left: 240px;
+    padding: 40px 48px;
+    max-width: calc(100% - 240px);
+  }
+
+  /* ─── SCREENS ─── */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* ─── DASHBOARD ─── */
+  .page-header { margin-bottom: 36px; }
+  .page-header h1 {
+    font-family: 'Fraunces', serif; font-size: 32px; font-weight: 600;
+    letter-spacing: -0.5px; margin-bottom: 6px;
+  }
+  .page-header p { color: var(--muted); font-size: 15px; }
+
+  .stats-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 16px; margin-bottom: 32px;
+  }
+
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px; padding: 24px;
+    transition: all 0.2s;
+  }
+
+  .stat-card:hover { background: var(--card-hover); transform: translateY(-2px); }
+
+  .stat-label {
+    font-size: 12px; font-weight: 500; letter-spacing: 0.5px;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 10px;
+  }
+
+  .stat-value {
+    font-family: 'Fraunces', serif; font-size: 36px; font-weight: 300;
+    letter-spacing: -1px; margin-bottom: 6px;
+  }
+
+  .stat-change {
+    font-size: 12px; color: var(--green);
+  }
+
+  .two-col { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px; padding: 28px;
+  }
+
+  .card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 24px;
+  }
+
+  .card-title { font-size: 16px; font-weight: 600; }
+  .card-action {
+    font-size: 13px; color: var(--green); cursor: pointer;
+    font-weight: 500;
+  }
+
+  /* Photo grid */
+  .photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+
+  .photo-item {
+    aspect-ratio: 1;
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--navy-3);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    position: relative;
+  }
+
+  .photo-item img { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; }
+
+  .photo-upload {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; gap: 8px;
+    color: var(--muted); font-size: 12px;
+    border: 1.5px dashed rgba(255,255,255,0.15);
+    transition: all 0.2s;
+  }
+
+  .photo-upload:hover { border-color: var(--green); color: var(--green); background: rgba(74,222,128,0.04); }
+  .photo-upload .plus { font-size: 24px; }
+
+  /* Dishes */
+  .dish-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .dish-row {
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 14px; border-radius: 12px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    transition: all 0.15s;
+  }
+
+  .dish-row:hover { background: var(--card-hover); }
+
+  .dish-img {
+    width: 44px; height: 44px; border-radius: 8px;
+    background: var(--navy-3); flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  .dish-img img { width: 100%; height: 100%; object-fit: cover; }
+
+  .dish-info { flex: 1; }
+  .dish-name { font-size: 14px; font-weight: 500; margin-bottom: 2px; }
+  .dish-category { font-size: 12px; color: var(--muted); }
+
+  .dish-price {
+    font-family: 'Fraunces', serif;
+    font-size: 16px; font-weight: 600; color: var(--green);
+  }
+
+  .dish-actions { display: flex; gap: 8px; }
+
+  .icon-btn {
+    width: 30px; height: 30px; border-radius: 8px;
+    background: var(--card); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 13px; color: var(--muted);
+    transition: all 0.15s;
+  }
+
+  .icon-btn:hover { color: var(--white); background: var(--card-hover); }
+
+  /* Certification badge */
+  .cert-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(74,222,128,0.1);
+    border: 1px solid rgba(74,222,128,0.2);
+    color: var(--green); padding: 6px 12px; border-radius: 20px;
+    font-size: 12px; font-weight: 500; margin-bottom: 16px;
+  }
+
+  /* Info rows */
+  .info-row {
+    display: flex; gap: 12px; padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+  }
+
+  .info-row:last-child { border-bottom: none; }
+  .info-label { color: var(--muted); width: 100px; flex-shrink: 0; }
+  .info-value { flex: 1; }
+
+  /* ─── CLAIM SCREEN ─── */
+  .claim-hero {
+    max-width: 560px; margin: 60px auto; text-align: center;
+  }
+
+  .claim-icon {
+    width: 80px; height: 80px; border-radius: 20px;
+    background: rgba(74,222,128,0.1);
+    border: 1px solid rgba(74,222,128,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px; margin: 0 auto 28px;
+  }
+
+  .claim-hero h1 {
+    font-family: 'Fraunces', serif; font-size: 36px; font-weight: 600;
+    letter-spacing: -0.5px; margin-bottom: 14px; line-height: 1.2;
+  }
+
+  .claim-hero p {
+    color: var(--muted); font-size: 16px; line-height: 1.6; margin-bottom: 36px;
+  }
+
+  .search-box {
+    display: flex; gap: 10px; margin-bottom: 48px;
+  }
+
+  .search-input {
+    flex: 1; background: var(--card);
+    border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 18px; color: var(--white); font-size: 15px;
+    font-family: 'DM Sans', sans-serif;
+    outline: none; transition: border-color 0.2s;
+  }
+
+  .search-input:focus { border-color: var(--green); }
+  .search-input::placeholder { color: var(--muted); }
+
+  .btn-primary {
+    background: var(--green); color: var(--navy);
+    border: none; border-radius: 12px; padding: 14px 24px;
+    font-size: 14px; font-weight: 600; cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s; white-space: nowrap;
+  }
+
+  .btn-primary:hover { background: #22c55e; transform: translateY(-1px); }
+
+  .btn-secondary {
+    background: var(--card); color: var(--white);
+    border: 1px solid var(--border); border-radius: 12px;
+    padding: 12px 20px; font-size: 14px; font-weight: 500;
+    cursor: pointer; font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s;
+  }
+
+  .btn-secondary:hover { background: var(--card-hover); }
+
+  .search-results { text-align: left; display: flex; flex-direction: column; gap: 10px; }
+
+  .result-item {
+    display: flex; align-items: center; gap: 16px;
+    padding: 16px; border-radius: 14px;
+    background: var(--card); border: 1px solid var(--border);
+    cursor: pointer; transition: all 0.2s;
+  }
+
+  .result-item:hover { background: var(--card-hover); border-color: rgba(74,222,128,0.3); }
+
+  .result-img {
+    width: 52px; height: 52px; border-radius: 10px;
+    background: var(--navy-3); flex-shrink: 0; overflow: hidden;
+  }
+
+  .result-img img { width: 100%; height: 100%; object-fit: cover; }
+
+  .result-info { flex: 1; }
+  .result-name { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .result-meta { font-size: 13px; color: var(--muted); }
+
+  .result-cert {
+    font-size: 11px; font-weight: 600; color: var(--green);
+    background: rgba(74,222,128,0.1); padding: 4px 10px;
+    border-radius: 20px; border: 1px solid rgba(74,222,128,0.2);
+  }
+
+  /* ─── PHOTOS SCREEN ─── */
+  .upload-zone {
+    border: 2px dashed rgba(255,255,255,0.12); border-radius: 20px;
+    padding: 60px; text-align: center; margin-bottom: 32px;
+    cursor: pointer; transition: all 0.2s;
+  }
+
+  .upload-zone:hover { border-color: var(--green); background: rgba(74,222,128,0.03); }
+
+  .upload-icon { font-size: 48px; margin-bottom: 16px; }
+  .upload-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+  .upload-sub { color: var(--muted); font-size: 14px; margin-bottom: 20px; }
+
+  .photos-full-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+  }
+
+  .photo-full-item {
+    aspect-ratio: 4/3; border-radius: 14px; overflow: hidden;
+    background: var(--navy-3); border: 1px solid var(--border);
+    position: relative; cursor: pointer;
+  }
+
+  .photo-full-item img { width: 100%; height: 100%; object-fit: cover; }
+
+  .photo-overlay {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity 0.2s;
+    gap: 10px;
+  }
+
+  .photo-full-item:hover .photo-overlay { opacity: 1; }
+
+  /* ─── MENU SCREEN ─── */
+  .menu-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 28px;
+  }
+
+  .category-tabs {
+    display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap;
+  }
+
+  .tab {
+    padding: 8px 18px; border-radius: 20px; font-size: 13px;
+    font-weight: 500; cursor: pointer; transition: all 0.15s;
+    background: var(--card); border: 1px solid var(--border);
+    color: var(--muted);
+  }
+
+  .tab.active { background: rgba(74,222,128,0.1); color: var(--green); border-color: rgba(74,222,128,0.3); }
+  .tab:hover:not(.active) { color: var(--white); }
+
+  .dish-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+
+  .dish-card {
+    display: flex; gap: 14px; padding: 16px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; transition: all 0.2s; cursor: pointer;
+  }
+
+  .dish-card:hover { background: var(--card-hover); transform: translateY(-1px); }
+
+  .dish-card-img {
+    width: 72px; height: 72px; border-radius: 10px;
+    background: var(--navy-3); flex-shrink: 0; overflow: hidden;
+  }
+
+  .dish-card-img img { width: 100%; height: 100%; object-fit: cover; }
+
+  .dish-card-body { flex: 1; }
+  .dish-card-name { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .dish-card-desc { font-size: 12px; color: var(--muted); margin-bottom: 10px; line-height: 1.5; }
+
+  .dish-card-footer { display: flex; align-items: center; justify-content: space-between; }
+
+  .dish-card-price {
+    font-family: 'Fraunces', serif; font-size: 18px;
+    font-weight: 600; color: var(--green);
+  }
+
+  .recommend-badge {
+    font-size: 10px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.5px; color: #fbbf24;
+    background: rgba(251,191,36,0.1); padding: 3px 8px;
+    border-radius: 10px; border: 1px solid rgba(251,191,36,0.2);
+  }
+
+  /* ─── MODAL ─── */
+  .modal-bg {
+    display: none; position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+    align-items: center; justify-content: center;
+  }
+
+  .modal-bg.show { display: flex; }
+
+  .modal {
+    background: var(--navy-2); border: 1px solid var(--border);
+    border-radius: 20px; padding: 32px; width: 480px; max-width: 90vw;
+  }
+
+  .modal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 28px;
+  }
+
+  .modal-title { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 600; }
+  .modal-close { font-size: 20px; cursor: pointer; color: var(--muted); line-height: 1; }
+
+  .form-group { margin-bottom: 18px; }
+  .form-label { font-size: 13px; font-weight: 500; margin-bottom: 8px; display: block; color: var(--muted); }
+
+  .form-input {
+    width: 100%; background: var(--card);
+    border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px 14px; color: var(--white); font-size: 14px;
+    font-family: 'DM Sans', sans-serif; outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .form-input:focus { border-color: var(--green); }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .upload-mini {
+    width: 100%; height: 100px; border-radius: 10px;
+    background: var(--card); border: 1.5px dashed var(--border);
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; gap: 6px; cursor: pointer;
+    color: var(--muted); font-size: 13px; transition: all 0.2s;
+  }
+
+  .upload-mini:hover { border-color: var(--green); color: var(--green); }
+
+  .modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 28px; }
+
+  /* ─── LOGIN ─── */
+  .login-page {
+    min-height: 100vh; display: flex; align-items: center;
+    justify-content: center; padding: 24px;
+    background: radial-gradient(ellipse at 20% 50%, rgba(74,222,128,0.06) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(30,48,72,0.8) 0%, transparent 60%),
+                var(--navy);
+  }
+
+  .login-box {
+    width: 100%; max-width: 420px;
+    background: var(--navy-2); border: 1px solid var(--border);
+    border-radius: 24px; padding: 40px;
+  }
+
+  .login-logo {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 32px;
+    font-family: 'Fraunces', serif; font-size: 20px;
+  }
+
+  .login-logo .k {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: rgba(74,222,128,0.1);
+    border: 1px solid rgba(74,222,128,0.25);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+  }
+
+  .login-title {
+    font-family: 'Fraunces', serif; font-size: 28px; font-weight: 600;
+    letter-spacing: -0.5px; margin-bottom: 8px;
+  }
+
+  .login-sub { color: var(--muted); font-size: 15px; margin-bottom: 32px; }
+
+  .divider {
+    display: flex; align-items: center; gap: 12px;
+    margin: 24px 0; color: var(--muted); font-size: 13px;
+  }
+
+  .divider::before, .divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+
+  .google-btn {
+    width: 100%; padding: 13px; border-radius: 12px;
+    background: var(--card); border: 1px solid var(--border);
+    color: var(--white); font-size: 14px; font-weight: 500;
+    cursor: pointer; font-family: 'DM Sans', sans-serif;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    transition: all 0.2s;
+  }
+
+  .google-btn:hover { background: var(--card-hover); }
+
+  .login-footer { text-align: center; margin-top: 24px; color: var(--muted); font-size: 13px; }
+  .login-footer a { color: var(--green); text-decoration: none; }
+
+  /* ─── HOURS ─── */
+  .hours-grid { display: flex; flex-direction: column; gap: 10px; }
+
+  .hour-row {
+    display: flex; align-items: center; gap: 16px;
+    padding: 14px 16px; border-radius: 12px;
+    background: var(--card); border: 1px solid var(--border);
+  }
+
+  .hour-day { width: 90px; font-size: 14px; font-weight: 500; }
+
+  .toggle {
+    width: 40px; height: 22px; border-radius: 11px;
+    background: rgba(255,255,255,0.1); cursor: pointer;
+    position: relative; transition: background 0.2s; flex-shrink: 0;
+  }
+
+  .toggle.on { background: var(--green); }
+
+  .toggle::after {
+    content: ''; position: absolute;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: white; top: 3px; left: 3px;
+    transition: transform 0.2s;
+  }
+
+  .toggle.on::after { transform: translateX(18px); }
+
+  .hour-times { display: flex; align-items: center; gap: 8px; flex: 1; }
+
+  .time-input {
+    background: var(--navy-3); border: 1px solid var(--border);
+    border-radius: 8px; padding: 7px 12px; color: var(--white);
+    font-size: 13px; font-family: 'DM Sans', sans-serif; outline: none;
+    width: 90px;
+  }
+
+  .hour-closed { color: var(--muted); font-size: 14px; flex: 1; }
+
+  /* Animation */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .screen.active { animation: fadeUp 0.3s ease; }
+
+  /* Notification dot */
+  .notif {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--green); flex-shrink: 0;
+  }
+</style>
+</head>
+<body>
+
+<!-- ─── LOGIN PAGE ─── -->
+<div id="loginPage" class="login-page">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="k">✈️</div>
+      <div>Kosher <span style="color:var(--green)">Without Borders</span></div>
+    </div>
+    <div class="login-title">Owner Portal</div>
+    <div class="login-sub">Manage your listing, photos, and menu in one place.</div>
+
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input class="form-input" type="email" placeholder="restaurant@email.com" id="loginEmail">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input class="form-input" type="password" placeholder="••••••••" id="loginPass">
+    </div>
+    <button class="btn-primary" style="width:100%;margin-top:4px" onclick="goToPortal()">Sign in</button>
+
+    <div class="divider">or</div>
+
+    <button class="google-btn">
+      <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Continue with Google
+    </button>
+
+    <div class="login-footer">
+      Don't have an account? <a href="#" onclick="showClaim()">Claim your listing →</a>
+    </div>
+  </div>
+</div>
+
+<!-- ─── PORTAL ─── -->
+<div id="portal" style="display:none">
+
+<nav>
+  <div class="nav-logo">
+    <div class="k">✈️</div>
+    Kosher <span>&nbsp;Without Borders</span>
+  </div>
+  <div class="nav-right">
+    <span class="badge">✓ Verified</span>
+    <div class="avatar" title="Muzka Restaurant">M</div>
+  </div>
+</nav>
+
+<div class="layout">
+  <sidebar>
+    <div class="sidebar-section">
+      <div class="sidebar-label">My Listing</div>
+      <div class="nav-item active" onclick="showScreen('dashboard')">
+        <span class="icon">🏠</span> Dashboard
+      </div>
+      <div class="nav-item" onclick="showScreen('photos')">
+        <span class="icon">📸</span> Photos
+      </div>
+      <div class="nav-item" onclick="showScreen('menu')">
+        <span class="icon">🍽️</span> Menu & Dishes
+      </div>
+      <div class="nav-item" onclick="showScreen('hours')">
+        <span class="icon">🕐</span> Hours
+      </div>
+      <div class="nav-item" onclick="showScreen('info')">
+        <span class="icon">📝</span> Info & Details
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Insights</div>
+      <div class="nav-item" onclick="showScreen('reviews')">
+        <span class="icon">⭐</span> Reviews
+        <span class="notif"></span>
+      </div>
+      <div class="nav-item">
+        <span class="icon">📊</span> Analytics
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Account</div>
+      <div class="nav-item">
+        <span class="icon">⚙️</span> Settings
+      </div>
+      <div class="nav-item" onclick="logout()">
+        <span class="icon">👋</span> Log out
+      </div>
+    </div>
+  </sidebar>
+
+  <main>
+
+    <!-- DASHBOARD -->
+    <div id="screen-dashboard" class="screen active">
+      <div class="page-header">
+        <h1>Good morning, Muzka 👋</h1>
+        <p>Here's how your listing is performing</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Profile Views</div>
+          <div class="stat-value">3,016</div>
+          <div class="stat-change">↑ 12% this week</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Reviews</div>
+          <div class="stat-value">24</div>
+          <div class="stat-change">↑ 3 new this week</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Avg. Rating</div>
+          <div class="stat-value">4.2</div>
+          <div class="stat-change">★★★★☆</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Dishes Listed</div>
+          <div class="stat-value">18</div>
+          <div class="stat-change">↑ Add more to boost views</div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Listing Photos</div>
+            <div class="card-action" onclick="showScreen('photos')">Manage →</div>
+          </div>
+          <div class="photo-grid">
+            <div class="photo-item"><img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=200&q=80" alt=""></div>
+            <div class="photo-item"><img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=200&q=80" alt=""></div>
+            <div class="photo-item"><img src="https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=200&q=80" alt=""></div>
+            <div class="photo-item"><img src="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=200&q=80" alt=""></div>
+            <div class="photo-item"><img src="https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?w=200&q=80" alt=""></div>
+            <div class="photo-item photo-upload" onclick="showScreen('photos')">
+              <span class="plus">+</span>
+              <span>Add photo</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Listing Info</div>
+            <div class="card-action" onclick="showScreen('info')">Edit →</div>
+          </div>
+          <div class="cert-badge">✓ Shevet Ahim (Kosher Panama)</div>
+          <div class="info-row">
+            <span class="info-label">Type</span>
+            <span class="info-value">Meat · Delivery</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Address</span>
+            <span class="info-value">Plaza Bal Harbour, Panamá</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Phone</span>
+            <span class="info-value">+507 6769-1277</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Website</span>
+            <span class="info-value" style="color:var(--green)">muzkapty.com</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHOTOS -->
+    <div id="screen-photos" class="screen">
+      <div class="page-header">
+        <h1>Photos</h1>
+        <p>Great photos increase views by up to 3x</p>
+      </div>
+
+      <div class="upload-zone">
+        <div class="upload-icon">📸</div>
+        <div class="upload-title">Drop photos here</div>
+        <div class="upload-sub">JPG, PNG up to 10MB each · Recommended size 1200×800px</div>
+        <button class="btn-primary">Browse Files</button>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Your Photos (5)</div>
+          <div class="card-action">Set cover photo</div>
+        </div>
+        <div class="photos-full-grid">
+          <div class="photo-full-item">
+            <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&q=80" alt="">
+            <div class="photo-overlay">
+              <div class="icon-btn" style="background:rgba(0,0,0,0.6)">⭐</div>
+              <div class="icon-btn" style="background:rgba(0,0,0,0.6)">🗑️</div>
+            </div>
+          </div>
+          <div class="photo-full-item">
+            <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&q=80" alt="">
+            <div class="photo-overlay">
+              <div class="icon-btn" style="background:rgba(0,0,0,0.6)">⭐</div>
+              <div class="icon-btn" style="background:rgba(0,0,0,0.6)">🗑️</div>
+            </div>
+          </div>
+          <div class="photo-full-item">
+            <img src="https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400&q=80" alt="">
+            <div class="photo-overlay">
+              <div class="icon-btn" style="background:rgba(0,0,0,0.6)">⭐</div>
+              <div class="icon-btn" style="background:rgba(0,0,0,0.6)">🗑️</div>
+            </div>
+          </div>
+          <div class="photo-full-item">
+            <img src="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=400&q=80" alt="">
+            <div class="photo-overlay">
+              <div class="icon-btn" style="background:rgba(0,0,0,0.6)">⭐</div>
+              <div class="icon-btn" style="background:rgba(0,0,0,0.6)">🗑️</div>
+            </div>
+          </div>
+          <div class="photo-full-item">
+            <img src="https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?w=400&q=80" alt="">
+            <div class="photo-overlay">
+              <div class="icon-btn" style="background:rgba(0,0,0,0.6)">⭐</div>
+              <div class="icon-btn" style="background:rgba(0,0,0,0.6)">🗑️</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MENU -->
+    <div id="screen-menu" class="screen">
+      <div class="menu-header">
+        <div class="page-header" style="margin:0">
+          <h1>Menu & Dishes</h1>
+          <p>18 dishes across 4 categories</p>
+        </div>
+        <button class="btn-primary" onclick="openAddDish()">+ Add Dish</button>
+      </div>
+
+      <div class="category-tabs">
+        <div class="tab active">All (18)</div>
+        <div class="tab">Starters (4)</div>
+        <div class="tab">Mains (8)</div>
+        <div class="tab">Desserts (4)</div>
+        <div class="tab">Drinks (2)</div>
+      </div>
+
+      <div class="dish-grid">
+        <div class="dish-card">
+          <div class="dish-card-img"><img src="https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=150&q=80" alt=""></div>
+          <div class="dish-card-body">
+            <div class="dish-card-name">Brisket Tacos</div>
+            <div class="dish-card-desc">Slow-cooked beef brisket with pickled onions and chimichurri</div>
+            <div class="dish-card-footer">
+              <div class="dish-card-price">$18</div>
+              <div class="recommend-badge">⭐ Chef's Pick</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dish-card">
+          <div class="dish-card-img"><img src="https://images.unsplash.com/photo-1498654896293-37aacf113fd9?w=150&q=80" alt=""></div>
+          <div class="dish-card-body">
+            <div class="dish-card-name">Shakshuka</div>
+            <div class="dish-card-desc">Eggs poached in spiced tomato and pepper sauce</div>
+            <div class="dish-card-footer">
+              <div class="dish-card-price">$14</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dish-card">
+          <div class="dish-card-img"><img src="https://images.unsplash.com/photo-1567620832903-9fc6debc209f?w=150&q=80" alt=""></div>
+          <div class="dish-card-body">
+            <div class="dish-card-name">Original Cheesecake</div>
+            <div class="dish-card-desc">Classic New York style with graham cracker crust</div>
+            <div class="dish-card-footer">
+              <div class="dish-card-price">$14</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dish-card" onclick="openAddDish()" style="border-style:dashed;justify-content:center;align-items:center;flex-direction:column;gap:10px;min-height:120px">
+          <div style="font-size:28px">+</div>
+          <div style="font-size:14px;color:var(--muted)">Add another dish</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HOURS -->
+    <div id="screen-hours" class="screen">
+      <div class="page-header">
+        <h1>Opening Hours</h1>
+        <p>Keep your hours up to date so guests know when you're open</p>
+      </div>
+      <div class="card">
+        <div class="hours-grid">
+          ${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'].map((day, i) => {
+            const closed = i === 5;
+            return `
+            <div class="hour-row">
+              <div class="hour-day">${day}</div>
+              <div class="toggle ${closed ? '' : 'on'}" onclick="this.classList.toggle('on')"></div>
+              ${closed
+                ? `<div class="hour-closed">Closed</div>`
+                : `<div class="hour-times">
+                    <input class="time-input" value="${i === 0 ? '12:00 PM' : '11:00 AM'}">
+                    <span style="color:var(--muted)">–</span>
+                    <input class="time-input" value="${i === 4 ? '10:00 PM' : '11:00 PM'}">
+                  </div>`
+              }
+            </div>`;
+          }).join('')}
+        </div>
+        <div style="margin-top:24px;display:flex;justify-content:flex-end">
+          <button class="btn-primary">Save Hours</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- INFO -->
+    <div id="screen-info" class="screen">
+      <div class="page-header">
+        <h1>Info & Details</h1>
+        <p>This information appears on your public listing</p>
+      </div>
+      <div class="card" style="max-width:640px">
+        <div class="form-group">
+          <label class="form-label">Restaurant Name</label>
+          <input class="form-input" value="Muzka">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Phone</label>
+            <input class="form-input" value="+507 6769-1277">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Website</label>
+            <input class="form-input" value="muzkapty.com">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Address</label>
+          <input class="form-input" value="Plaza Bal Harbour, Panamá">
+        </div>
+        <div class="form-group">
+          <label class="form-label">KWB Highlight</label>
+          <textarea class="form-input" rows="3" style="resize:vertical">Delivery only.</textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">WhatsApp Number</label>
+          <input class="form-input" placeholder="+507 ...">
+        </div>
+        <div style="display:flex;justify-content:flex-end;margin-top:8px">
+          <button class="btn-primary">Save Changes</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- REVIEWS -->
+    <div id="screen-reviews" class="screen">
+      <div class="page-header">
+        <h1>Reviews</h1>
+        <p>What guests are saying about you</p>
+      </div>
+      <div class="card">
+        <p style="color:var(--muted);text-align:center;padding:40px">Reviews dashboard coming soon</p>
+      </div>
+    </div>
+
+    <!-- CLAIM -->
+    <div id="screen-claim" class="screen">
+      <div class="claim-hero">
+        <div class="claim-icon">🔍</div>
+        <h1>Find your listing</h1>
+        <p>Search for your restaurant in our database of 5,875 kosher establishments worldwide. Once found, we'll verify your ownership and give you full access.</p>
+        <div class="search-box">
+          <input class="search-input" placeholder="Search restaurant name or city..." id="claimSearch">
+          <button class="btn-primary">Search</button>
+        </div>
+        <div class="search-results" id="claimResults" style="display:none">
+          <div class="result-item" onclick="claimThis()">
+            <div class="result-img"><img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=100&q=80" alt=""></div>
+            <div class="result-info">
+              <div class="result-name">Muzka</div>
+              <div class="result-meta">Plaza Bal Harbour, Panamá · Meat · Delivery</div>
+            </div>
+            <div class="result-cert">Shevet Ahim</div>
+          </div>
+          <div class="result-item">
+            <div class="result-img" style="background:var(--navy-3)"></div>
+            <div class="result-info">
+              <div class="result-name">Restaurante La Finka Steakhouse</div>
+              <div class="result-meta">Panamá · Meat</div>
+            </div>
+            <div class="result-cert">Shevet Ahim</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+</div>
+
+<!-- ADD DISH MODAL -->
+<div class="modal-bg" id="addDishModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Add Dish</div>
+      <span class="modal-close" onclick="closeModal()">×</span>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Dish Name *</label>
+        <input class="form-input" placeholder="e.g. Brisket Tacos">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Price *</label>
+        <input class="form-input" placeholder="$ 0.00">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Category *</label>
+      <select class="form-input">
+        <option>Select category</option>
+        <option>Starters</option>
+        <option>Mains</option>
+        <option>Desserts</option>
+        <option>Drinks</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Description</label>
+      <textarea class="form-input" rows="2" placeholder="What's in this dish?"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Photo</label>
+      <div class="upload-mini">
+        <span style="font-size:24px">📷</span>
+        <span>Upload dish photo</span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="closeModal()">Save Dish</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function goToPortal() {
+  document.getElementById('loginPage').style.display = 'none';
+  document.getElementById('portal').style.display = 'block';
+}
+
+function logout() {
+  document.getElementById('portal').style.display = 'none';
+  document.getElementById('loginPage').style.display = 'flex';
+}
+
+function showClaim() {
+  document.getElementById('loginPage').style.display = 'none';
+  document.getElementById('portal').style.display = 'block';
+  showScreen('claim');
+}
+
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+  event && event.currentTarget && event.currentTarget.classList.add('active');
+}
+
+function openAddDish() { document.getElementById('addDishModal').classList.add('show'); }
+function closeModal() { document.getElementById('addDishModal').classList.remove('show'); }
+
+document.getElementById('addDishModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+document.getElementById('claimSearch').addEventListener('input', function() {
+  const r = document.getElementById('claimResults');
+  r.style.display = this.value.length > 1 ? 'flex' : 'none';
+});
+
+function claimThis() {
+  document.getElementById('screen-claim').classList.remove('active');
+  document.getElementById('loginPage').style.display = 'none';
+  document.getElementById('portal').style.display = 'block';
+  showScreen('dashboard');
+}
+
+// Enter key login
+document.getElementById('loginPass').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') goToPortal();
+});
+</script>
+
+</body>
+</html>
