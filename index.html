@@ -652,7 +652,7 @@
 <div class="layout">
   <sidebar>
     <div class="sidebar-section">
-      <div class="sidebar-label">My Listing</div>
+      <div class="sidebar-label">Free</div>
       <div class="nav-item active" onclick="showScreen('dashboard')">
         <span class="icon">🏠</span> Dashboard
       </div>
@@ -668,22 +668,37 @@
       <div class="nav-item" onclick="showScreen('info')">
         <span class="icon">📝</span> Info & Details
       </div>
+      <div class="nav-item" onclick="showScreen('coupons')">
+        <span class="icon">🎟️</span> Coupons
+      </div>
+      <div class="nav-item" onclick="showScreen('delivery')">
+        <span class="icon">🛵</span> Delivery
+      </div>
+      <div class="nav-item" onclick="showScreen('tags')">
+        <span class="icon">🏷️</span> Tags
+      </div>
     </div>
     <div class="sidebar-section">
-      <div class="sidebar-label">Insights</div>
+      <div class="sidebar-label" style="color:var(--green)">Premium ✦</div>
       <div class="nav-item" onclick="showScreen('reviews')">
         <span class="icon">⭐</span> Reviews
-        <span class="notif"></span>
+        <span class="dot"></span>
       </div>
-      <div class="nav-item">
-        <span class="icon">📊</span> Analytics
+      <div class="nav-item" onclick="showScreen('booking')">
+        <span class="icon">📅</span> Booking
+      </div>
+      <div class="nav-item" onclick="showScreen('chefspick')">
+        <span class="icon">👨‍🍳</span> Chef's Pick
+      </div>
+      <div class="nav-item" onclick="showScreen('tabletmenu')">
+        <span class="icon">📱</span> Tablet Menu
+      </div>
+      <div class="nav-item" onclick="showScreen('advertising')">
+        <span class="icon">📣</span> Advertising
       </div>
     </div>
     <div class="sidebar-section">
       <div class="sidebar-label">Account</div>
-      <div class="nav-item">
-        <span class="icon">⚙️</span> Settings
-      </div>
       <div class="nav-item" onclick="logout()">
         <span class="icon">👋</span> Log out
       </div>
@@ -700,11 +715,6 @@
       </div>
 
       <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-label">Profile Views</div>
-          <div class="stat-value">3,016</div>
-          <div class="stat-change">↑ 12% this week</div>
-        </div>
         <div class="stat-card">
           <div class="stat-label">Reviews</div>
           <div class="stat-value">24</div>
@@ -894,22 +904,41 @@
       </div>
       <div class="card">
         <div class="hours-grid">
-          ${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'].map((day, i) => {
-            const closed = i === 5;
-            return `
-            <div class="hour-row">
-              <div class="hour-day">${day}</div>
-              <div class="toggle ${closed ? '' : 'on'}" onclick="this.classList.toggle('on')"></div>
-              ${closed
-                ? `<div class="hour-closed">Closed</div>`
-                : `<div class="hour-times">
-                    <input class="time-input" value="${i === 0 ? '12:00 PM' : '11:00 AM'}">
-                    <span style="color:var(--muted)">–</span>
-                    <input class="time-input" value="${i === 4 ? '10:00 PM' : '11:00 PM'}">
-                  </div>`
-              }
-            </div>`;
-          }).join('')}
+          <div class="hour-row">
+            <div class="hour-day">Sunday</div>
+            <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+            <div class="hour-times"><input class="time-input" value="12:00 PM"><span style="color:var(--muted)">–</span><input class="time-input" value="11:00 PM"></div>
+          </div>
+          <div class="hour-row">
+            <div class="hour-day">Monday</div>
+            <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+            <div class="hour-times"><input class="time-input" value="11:00 AM"><span style="color:var(--muted)">–</span><input class="time-input" value="11:00 PM"></div>
+          </div>
+          <div class="hour-row">
+            <div class="hour-day">Tuesday</div>
+            <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+            <div class="hour-times"><input class="time-input" value="11:00 AM"><span style="color:var(--muted)">–</span><input class="time-input" value="11:00 PM"></div>
+          </div>
+          <div class="hour-row">
+            <div class="hour-day">Wednesday</div>
+            <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+            <div class="hour-times"><input class="time-input" value="11:00 AM"><span style="color:var(--muted)">–</span><input class="time-input" value="11:00 PM"></div>
+          </div>
+          <div class="hour-row">
+            <div class="hour-day">Thursday</div>
+            <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+            <div class="hour-times"><input class="time-input" value="11:00 AM"><span style="color:var(--muted)">–</span><input class="time-input" value="10:00 PM"></div>
+          </div>
+          <div class="hour-row">
+            <div class="hour-day">Friday</div>
+            <div class="toggle" onclick="this.classList.toggle('on')"></div>
+            <div class="hour-closed">Closed</div>
+          </div>
+          <div class="hour-row">
+            <div class="hour-day">Saturday</div>
+            <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+            <div class="hour-times"><input class="time-input" value="11:00 AM"><span style="color:var(--muted)">–</span><input class="time-input" value="11:00 PM"></div>
+          </div>
         </div>
         <div style="margin-top:24px;display:flex;justify-content:flex-end">
           <button class="btn-primary">Save Hours</button>
@@ -1201,6 +1230,279 @@
       </div>
     </div>
 
+
+    <!-- COUPONS -->
+    <div id="screen-coupons" class="screen">
+      <div class="page-header">
+        <h1>Coupons</h1>
+        <p>Offer a discount or special deal — shown on your public listing</p>
+      </div>
+      <div class="card" style="max-width:560px">
+        <div class="form-group">
+          <label class="form-label">Coupon Text *</label>
+          <input class="form-input" placeholder="e.g. 10% off your first order, Free dessert with any main…">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Release Date</label>
+            <input class="form-input" type="date">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Expiration Date</label>
+            <input class="form-input" type="date">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Coupon Code (optional)</label>
+          <input class="form-input" placeholder="e.g. KOSHER10">
+        </div>
+        <div style="display:flex;justify-content:flex-end;margin-top:8px">
+          <button class="btn-primary">Save Coupon</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DELIVERY -->
+    <div id="screen-delivery" class="screen">
+      <div class="page-header">
+        <h1>Delivery Platforms</h1>
+        <p>Show customers where they can order from you</p>
+      </div>
+      <div class="card" style="margin-bottom:24px">
+        <div class="card-header">
+          <div class="card-title">Active Platforms</div>
+          <div class="card-action" onclick="document.getElementById('addDeliveryForm').style.display='block'">+ Add Platform</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;align-items:center;gap:14px;padding:12px 14px;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:12px">
+            <div style="width:44px;height:44px;border-radius:10px;background:var(--navy-3);display:flex;align-items:center;justify-content:center;font-size:22px">🛵</div>
+            <div style="flex:1">
+              <div style="font-weight:600;font-size:14px">Uber Eats</div>
+              <div style="font-size:12px;color:var(--muted)">ubereats.com/muzka</div>
+            </div>
+            <div class="icon-btn" style="font-size:15px">✏️</div>
+            <div class="icon-btn" style="font-size:15px">🗑️</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:14px;padding:12px 14px;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:12px">
+            <div style="width:44px;height:44px;border-radius:10px;background:var(--navy-3);display:flex;align-items:center;justify-content:center;font-size:22px">🍽️</div>
+            <div style="flex:1">
+              <div style="font-weight:600;font-size:14px">Mesa2</div>
+              <div style="font-size:12px;color:var(--muted)">mesa2.com/muzka</div>
+            </div>
+            <div class="icon-btn" style="font-size:15px">✏️</div>
+            <div class="icon-btn" style="font-size:15px">🗑️</div>
+          </div>
+        </div>
+      </div>
+      <div class="card" id="addDeliveryForm" style="max-width:560px;display:none">
+        <div style="font-size:16px;font-weight:600;margin-bottom:20px">Add Delivery Platform</div>
+        <div class="form-group">
+          <label class="form-label">Platform Name *</label>
+          <input class="form-input" placeholder="e.g. Uber Eats, Wolt, Mesa2">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Your Listing Link *</label>
+          <input class="form-input" placeholder="https://ubereats.com/your-restaurant">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Logo / Icon URL (optional)</label>
+          <input class="form-input" placeholder="https://…">
+        </div>
+        <div style="display:flex;gap:10px;justify-content:flex-end">
+          <button class="btn-secondary" onclick="document.getElementById('addDeliveryForm').style.display='none'">Cancel</button>
+          <button class="btn-primary">Add Platform</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAGS -->
+    <div id="screen-tags" class="screen">
+      <div class="page-header">
+        <h1>Tags</h1>
+        <p>Select all tags that apply — these control how you appear on the map and in search</p>
+      </div>
+      <div class="card">
+        <div style="font-size:13px;color:var(--muted);margin-bottom:20px">Select your Main Tag first — this is your primary map marker icon</div>
+        <div class="form-group">
+          <label class="form-label">Main Tag *</label>
+          <select class="form-input" style="max-width:300px">
+            <option>Food</option>
+            <option>Restaurant</option>
+            <option>Bakery</option>
+            <option>Cafe</option>
+            <option>Butcher Shop</option>
+            <option>Activities</option>
+          </select>
+        </div>
+        <div style="font-size:14px;font-weight:600;margin:24px 0 14px">Additional Tags</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+          ${['Meat','Dairy','Pareve','Restaurant','Bakery','Cafe','Bar','Burgers','Pizza','Sushi','Asian','Italian','Middle Eastern','Mexican','Steakhouse','Sandwiches','Salads','Breakfast','Desserts','Ice Cream','Catering','Butcher Shop','Fish Market','Grocery','Supermarket','Hotel','Activities','Airport','Tours','Museum','Shul / Synagogue','Mikveh','Minyan'].map(tag => `
+          <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;padding:8px 12px;background:var(--card);border:1px solid var(--border);border-radius:8px">
+            <input type="checkbox" style="accent-color:var(--green)"> ${tag}
+          </label>`).join('')}
+        </div>
+        <div style="display:flex;justify-content:flex-end;margin-top:24px">
+          <button class="btn-primary">Save Tags</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOOKING -->
+    <div id="screen-booking" class="screen">
+      <div class="page-header">
+        <h1>Booking & Reservations</h1>
+        <p>Let guests reserve a table directly from your listing — Premium feature</p>
+      </div>
+      <div class="card" style="max-width:560px">
+        <div class="form-group">
+          <label class="form-label">Booking Platform Name</label>
+          <input class="form-input" placeholder="e.g. ReservaTuMesa, OpenTable, Resy" value="ReservaTuMesa">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Your Booking Link *</label>
+          <input class="form-input" placeholder="https://reservatumesa.com/muzka">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Platform Logo URL (optional)</label>
+          <input class="form-input" placeholder="https://…">
+          <div style="font-size:11px;color:var(--muted);margin-top:5px">Recommended: 150×150px. Leave blank to show platform name as text.</div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;margin-top:8px">
+          <button class="btn-primary">Save Booking Link</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHEF'S PICK -->
+    <div id="screen-chefspick" class="screen">
+      <div class="page-header">
+        <h1>Chef's Pick</h1>
+        <p>Highlight one featured dish on your listing — Premium feature</p>
+      </div>
+      <div class="card" style="max-width:560px">
+        <div class="form-group">
+          <label class="form-label">Featured Dish *</label>
+          <select class="form-input">
+            <option>Select from your menu…</option>
+            <option selected>Brisket Tacos — $18</option>
+            <option>Shakshuka — $14</option>
+            <option>Original Cheesecake — $14</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Chef's Note (optional)</label>
+          <textarea class="form-input" rows="3" placeholder="Why this dish? What makes it special?">Our slow-cooked brisket is marinated for 12 hours and served with house-made pickled onions. Our most ordered dish for a reason.</textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Featured Photo</label>
+          <div class="upload-zone" style="padding:30px">
+            <div style="font-size:32px;margin-bottom:10px">📷</div>
+            <div style="font-size:14px;font-weight:600;margin-bottom:6px">Upload a great photo of this dish</div>
+            <div style="color:var(--muted);font-size:13px;margin-bottom:16px">1200×800px recommended</div>
+            <button class="btn-primary">Browse Files</button>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;margin-top:8px">
+          <button class="btn-primary">Save Chef's Pick</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABLET MENU -->
+    <div id="screen-tabletmenu" class="screen">
+      <div class="page-header">
+        <h1>Tablet Menu</h1>
+        <p>Generate a branded PDF menu for your tables — Premium feature</p>
+      </div>
+      <div class="card" style="max-width:640px;margin-bottom:24px">
+        <div class="card-header">
+          <div class="card-title">Your Menu PDF</div>
+        </div>
+        <p style="color:var(--muted);font-size:14px;line-height:1.6;margin-bottom:20px">We'll generate a clean, professional PDF from your menu dishes. Place it on a tablet or iPad at the table. Every page shows your restaurant name and is branded with <span style="color:var(--green)">Powered by Kosher Without Borders</span> at the bottom.</p>
+        <div style="background:rgba(74,222,128,0.05);border:1px solid rgba(74,222,128,0.15);border-radius:14px;padding:20px;margin-bottom:20px">
+          <div style="font-size:13px;font-weight:600;color:var(--green);margin-bottom:10px">What's included</div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.8">✓ All dishes from your Menu & Dishes section<br>✓ Photos, descriptions, and prices<br>✓ Organized by category<br>✓ Your restaurant name and certification on the cover<br>✓ "Powered by Kosher Without Borders" footer</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Cover Tagline (optional)</label>
+          <input class="form-input" placeholder="e.g. Fresh kosher delivery in Panamá">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Language</label>
+          <select class="form-input" style="max-width:200px">
+            <option>English</option>
+            <option>Spanish</option>
+            <option>Hebrew</option>
+            <option>French</option>
+          </select>
+        </div>
+        <div style="display:flex;gap:12px;margin-top:8px">
+          <button class="btn-primary">🖨️ Generate PDF</button>
+          <button class="btn-secondary">👁 Preview</button>
+        </div>
+      </div>
+      <div class="card" style="max-width:640px;opacity:0.6">
+        <div style="font-size:13px;color:var(--muted)">Last generated: Never · <span style="color:var(--green);cursor:pointer">Regenerate after updating your menu</span></div>
+      </div>
+    </div>
+
+    <!-- ADVERTISING -->
+    <div id="screen-advertising" class="screen">
+      <div class="page-header">
+        <h1>Advertising</h1>
+        <p>Reach more kosher travelers and locals — Premium placements</p>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:32px">
+        <div class="card" style="text-align:center;cursor:pointer;transition:all 0.2s" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform=''">
+          <div style="font-size:40px;margin-bottom:16px">⭐</div>
+          <div style="font-size:15px;font-weight:700;margin-bottom:8px">Featured Listing</div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:20px">Your restaurant appears at the top of search results and on the app home screen. Seen by every user in your city.</div>
+          <div style="font-family:'Fraunces',serif;font-size:24px;font-weight:300;color:var(--green);margin-bottom:16px">$49<span style="font-size:14px;color:var(--muted)">/month</span></div>
+          <button class="btn-primary" onclick="openAdContact('Featured Listing')">Get Started</button>
+        </div>
+        <div class="card" style="text-align:center;cursor:pointer;transition:all 0.2s;border-color:rgba(74,222,128,0.3)" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform=''">
+          <div style="font-size:40px;margin-bottom:16px">🎬</div>
+          <div style="font-size:15px;font-weight:700;margin-bottom:8px">Instagram Reel</div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:20px">We produce and post a professional Reel about your restaurant on the KWB Instagram. Reaches our full kosher traveler audience.</div>
+          <div style="font-family:'Fraunces',serif;font-size:24px;font-weight:300;color:var(--green);margin-bottom:16px">$299<span style="font-size:14px;color:var(--muted)">/reel</span></div>
+          <button class="btn-primary" onclick="openAdContact('Instagram Reel')">Get Started</button>
+        </div>
+        <div class="card" style="text-align:center;cursor:pointer;transition:all 0.2s" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform=''">
+          <div style="font-size:40px;margin-bottom:16px">📧</div>
+          <div style="font-size:15px;font-weight:700;margin-bottom:8px">Email Blast</div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:20px">Your restaurant featured in our newsletter sent to thousands of kosher travelers on our email list. Perfect for promotions or openings.</div>
+          <div style="font-family:'Fraunces',serif;font-size:24px;font-weight:300;color:var(--green);margin-bottom:16px">$149<span style="font-size:14px;color:var(--muted)">/blast</span></div>
+          <button class="btn-primary" onclick="openAdContact('Email Blast')">Get Started</button>
+        </div>
+      </div>
+      <div class="card" style="max-width:640px">
+        <div style="font-size:14px;color:var(--muted);line-height:1.6">Questions? Contact us directly:<br>
+          <span style="color:var(--white)">📞 +1 (786) 630-3496</span> &nbsp;·&nbsp;
+          <span style="color:var(--green)">✉️ go@kosherwithoutborders.com</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- AD CONTACT MODAL -->
+    <div class="modal-bg" id="adContactModal">
+      <div class="modal" style="text-align:center">
+        <div style="font-size:36px;margin-bottom:16px">🎉</div>
+        <div class="modal-title" style="margin-bottom:10px">Let's talk!</div>
+        <p style="color:var(--muted);font-size:14px;line-height:1.6;margin-bottom:24px">You've selected <strong id="adProductName" style="color:var(--white)"></strong>. Our team will reach out to you shortly to get started.</p>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:24px;text-align:left">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+            <span style="font-size:18px">📞</span>
+            <span style="font-size:14px">+1 (786) 630-3496</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <span style="font-size:18px">✉️</span>
+            <span style="font-size:14px;color:var(--green)">go@kosherwithoutborders.com</span>
+          </div>
+        </div>
+        <button class="btn-primary" style="width:100%" onclick="document.getElementById('adContactModal').classList.remove('show')">Got it!</button>
+      </div>
+    </div>
+
   </main>
 </div>
 
@@ -1225,13 +1527,26 @@
     </div>
     <div class="form-group">
       <label class="form-label">Category *</label>
-      <select class="form-input">
-        <option>Select category</option>
-        <option>Starters</option>
-        <option>Mains</option>
-        <option>Desserts</option>
-        <option>Drinks</option>
-      </select>
+      <input class="form-input" id="dishCategory" placeholder="e.g. Smash Burgers, Sushi, Salads…">
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px">
+        <span onclick="setCategory('Starters')" style="padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500;background:var(--card);border:1px solid var(--border);color:var(--muted);cursor:pointer">Starters</span>
+        <span onclick="setCategory('Mains')" style="padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500;background:var(--card);border:1px solid var(--border);color:var(--muted);cursor:pointer">Mains</span>
+        <span onclick="setCategory('Sandwiches')" style="padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500;background:var(--card);border:1px solid var(--border);color:var(--muted);cursor:pointer">Sandwiches</span>
+        <span onclick="setCategory('Burgers')" style="padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500;background:var(--card);border:1px solid var(--border);color:var(--muted);cursor:pointer">Burgers</span>
+        <span onclick="setCategory('Pizza')" style="padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500;background:var(--card);border:1px solid var(--border);color:var(--muted);cursor:pointer">Pizza</span>
+        <span onclick="setCategory('Sushi')" style="padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500;background:var(--card);border:1px solid var(--border);color:var(--muted);cursor:pointer">Sushi</span>
+        <span onclick="setCategory('Salads')" style="padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500;background:var(--card);border:1px solid var(--border);color:var(--muted);cursor:pointer">Salads</span>
+        <span onclick="setCategory('Pasta')" style="padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500;background:var(--card);border:1px solid var(--border);color:var(--muted);cursor:pointer">Pasta</span>
+        <span onclick="setCategory('Grills & BBQ')" style="padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500;background:var(--card);border:1px solid var(--border);color:var(--muted);cursor:pointer">Grills & BBQ</span>
+        <span onclick="setCategory('Chicken')" style="padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500;background:var(--card);border:1px solid var(--border);color:var(--muted);cursor:pointer">Chicken</span>
+        <span onclick="setCategory('Fish')" style="padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500;background:var(--card);border:1px solid var(--border);color:var(--muted);cursor:pointer">Fish</span>
+        <span onclick="setCategory('Tacos')" style="padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500;background:var(--card);border:1px solid var(--border);color:var(--muted);cursor:pointer">Tacos</span>
+        <span onclick="setCategory('Soups')" style="padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500;background:var(--card);border:1px solid var(--border);color:var(--muted);cursor:pointer">Soups</span>
+        <span onclick="setCategory('Breakfast')" style="padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500;background:var(--card);border:1px solid var(--border);color:var(--muted);cursor:pointer">Breakfast</span>
+        <span onclick="setCategory('Sides')" style="padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500;background:var(--card);border:1px solid var(--border);color:var(--muted);cursor:pointer">Sides</span>
+        <span onclick="setCategory('Desserts')" style="padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500;background:var(--card);border:1px solid var(--border);color:var(--muted);cursor:pointer">Desserts</span>
+        <span onclick="setCategory('Drinks')" style="padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500;background:var(--card);border:1px solid var(--border);color:var(--muted);cursor:pointer">Drinks</span>
+      </div>
     </div>
     <div class="form-group">
       <label class="form-label">Description</label>
@@ -1298,6 +1613,16 @@ function claimThis() {
 document.getElementById('loginPass').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') goToPortal();
 });
+
+function setCategory(name) {
+  const el = document.getElementById('dishCategory');
+  if (el) el.value = name;
+}
+
+function openAdContact(product) {
+  document.getElementById('adProductName').textContent = product;
+  document.getElementById('adContactModal').classList.add('show');
+}
 
 function openReply(id) {
   document.getElementById('reply-placeholder-' + id).style.display = 'none';
