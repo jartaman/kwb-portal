@@ -1241,6 +1241,7 @@ async function handleEmailLogin() {
 }
 
 
+async function handleGoogleCredential(response) {
   const idToken = response.credential;
   if (!idToken) {
     showLoginError('Google sign-in failed. Please try again.');
