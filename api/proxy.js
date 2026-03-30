@@ -5,7 +5,9 @@ export default async function handler(req, res) {
   const endpoint = req.query.endpoint;
   if (!endpoint) return res.status(400).json({ error: 'Missing endpoint' });
 
-  const url = `https://kosherwithoutborders.com/KWB/api/${endpoint}`;
+  const isGetPlaces = endpoint.includes("GetPlaces");
+  const base = isGetPlaces ? "https://kosherwithoutborders.com/KWB-API/api/" : "https://kosherwithoutborders.com/KWB/api/";
+  const url = base + endpoint;
   try {
     const r = await fetch(url, {
       method: 'POST',
