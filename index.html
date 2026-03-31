@@ -402,7 +402,9 @@ async function handleGoogleLogin() {
     try {
       const result = await window._signInWithPopup(window._auth, window._provider);
       const cred = window._GoogleAuthProvider?.credentialFromResult(result);
-      if (cred) window._googleAccessToken = cred.accessToken;
+      const token = cred?.accessToken || result?._tokenResponse?.oauthAccessToken;
+      if (token) { window._googleAccessToken = token; console.log('[KWB] token captured:', token.substring(0,15)); }
+      else { console.warn('[KWB] no token found. cred:', cred, 'result keys:', Object.keys(result||{})); }
     } catch(e) {
       showError('Google sign-in failed. Try again.');
     }
