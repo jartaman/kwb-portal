@@ -472,7 +472,7 @@ async function searchRestaurants(q) {
   _searchTimeout = setTimeout(async () => {
     results.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:10px">Searching...</div>';
     try {
-      const res = await kwbPost('Place/SearchEstablishments', { Query: q });
+      const res = await kwbPost('Place/GetPlaces', { Query: q, idToken: window._currentFirebaseUser?.stsTokenManager?.accessToken || '' });
       const data = await res.json();
       const items = data?.DataSource || [];
       if (!items.length) {
