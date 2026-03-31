@@ -399,7 +399,9 @@ async function handleEmailAuth() {
 async function handleGoogleLogin() {
   waitForFirebase(async () => {
     try {
-      await window._signInWithPopup(window._auth, window._provider);
+      const result = await window._signInWithPopup(window._auth, window._provider);
+      const cred = window._GoogleAuthProvider?.credentialFromResult(result);
+      if (cred) window._googleAccessToken = cred.accessToken;
     } catch(e) {
       showError('Google sign-in failed. Try again.');
     }
@@ -472,7 +474,7 @@ async function searchRestaurants(q) {
   _searchTimeout = setTimeout(async () => {
     results.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:10px">Searching...</div>';
     try {
-      const res = await kwbPost('Place/GetPlaces', { Query: q, idToken: window._currentFirebaseUser?.stsTokenManager?.accessToken || '' });
+      const res = await kwbPost('Place/GetPlaces', { Query: q, idToken: window._googleAccessToken || '' });
       const data = await res.json();
       const items = data?.DataSource || [];
       if (!items.length) {
