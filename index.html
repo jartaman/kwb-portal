@@ -477,8 +477,12 @@ async function searchRestaurants(q) {
   _searchTimeout = setTimeout(async () => {
     results.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:10px">Searching...</div>';
     try {
-      const res = await kwbPost('Place/GetPlaces', { Query: q, idToken: window._googleAccessToken || '' });
+      const user = window._currentFirebaseUser;
+      const idToken = user ? await user.getIdToken() : (window._googleAccessToken || '');
+      console.log('[KWB] token:', idToken ? idToken.substring(0,20) : 'NONE');
+      const res = await kwbPost('Place/GetPlaces', { Query: q, idToken });
       const data = await res.json();
+      console.log('[KWB] response:', JSON.stringify(data).substring(0,150));
       const items = data?.DataSource || [];
       if (!items.length) {
         results.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:10px">No results found.</div>';
