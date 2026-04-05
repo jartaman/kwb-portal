@@ -402,9 +402,12 @@ async function handleGoogleLogin() {
     try {
       const result = await window._signInWithPopup(window._auth, window._provider);
       const cred = window._GoogleAuthProvider?.credentialFromResult(result);
-      const token = cred?.accessToken || result?._tokenResponse?.oauthAccessToken;
-      if (token) { window._googleAccessToken = token; console.log('[KWB] token captured:', token.substring(0,15)); }
-      else { console.warn('[KWB] no token found. cred:', cred, 'result keys:', Object.keys(result||{})); }
+      const idToken = cred?.idToken || result?._tokenResponse?.idToken;
+      const accessToken = cred?.accessToken || result?._tokenResponse?.oauthAccessToken;
+      console.log('[KWB] idToken:', idToken ? idToken.substring(0,20) : 'NONE');
+      console.log('[KWB] accessToken:', accessToken ? accessToken.substring(0,20) : 'NONE');
+      if (idToken) window._googleAccessToken = idToken;
+      else if (accessToken) window._googleAccessToken = accessToken;
     } catch(e) {
       showError('Google sign-in failed. Try again.');
     }
@@ -478,8 +481,8 @@ async function searchRestaurants(q) {
     results.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:10px">Searching...</div>';
     try {
       const user = window._currentFirebaseUser;
-      const idToken = user ? await user.getIdToken() : (window._googleAccessToken || '');
-      console.log('[KWB] token:', idToken ? idToken.substring(0,20) : 'NONE');
+      const idToken = window._googleAccessToken || '';
+      console.log('[KWB] search token:', idToken ? idToken.substring(0,20) : 'NONE');
       const res = await kwbPost('Place/GetPlaces', { Query: q, idToken });
       const data = await res.json();
       console.log('[KWB] response:', JSON.stringify(data).substring(0,150));
