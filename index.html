@@ -481,7 +481,7 @@ async function searchRestaurants(q) {
     results.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:10px">Searching...</div>';
     try {
       const user = window._currentFirebaseUser;
-      const idToken = window._googleAccessToken || 'ya29.a0Aa4xrXOdkjZoFgJrlHqC70apyi74N5RBSu9eIjBUCozBWTpjXo0676E4TpK9ghPKK_MKtMD78Zv3ALEfk2W2XCOI2IZgL9wUdTATnYxBYExPNXG-BWlfHEM1mkutqcNydnndVl9KQVMWpCTeVBKLW5MtIxquWwaCgYKATASAQASFQEjDvL97ci_-k7zEGqE9gIvhu1xTg0165';
+      const idToken = window._googleAccessToken || '__KWB_TOKEN__';
       const res = await kwbPost('Place/GetPlaces', { Query: q, idToken });
       const data = await res.json();
       console.log('[KWB] response:', JSON.stringify(data).substring(0,150));
