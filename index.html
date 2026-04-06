@@ -485,7 +485,7 @@ async function searchRestaurants(q) {
       const res = await kwbPost('Place/GetPlaces', { Query: q, idToken });
       const data = await res.json();
       console.log('[KWB] response:', JSON.stringify(data).substring(0,150));
-      const items = data?.DataSource || [];
+      const items = data?.DataSource || data?.dataSource || [];
       if (!items.length) {
         results.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:10px">No results found.</div>';
         return;
