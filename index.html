@@ -206,6 +206,34 @@
   .pending-title { font-weight: 700; margin-bottom: 6px; }
   .pending-sub { font-size: 13px; color: var(--muted); }
 
+  .dash-card { background: var(--card); border-radius: 16px; overflow: hidden; }
+  .dash-tabs { display: flex; border-bottom: 1px solid var(--border); }
+  .dash-tab { flex: 1; padding: 14px 8px; background: none; border: none; color: var(--muted); font-size: 13px; font-weight: 600; cursor: pointer; }
+  .dash-tab.active { color: var(--green); border-bottom: 2px solid var(--green); }
+  .dash-tab-content { display: none; padding: 20px; }
+  .dash-tab-content.active { display: block; }
+  .field-group { margin-bottom: 16px; }
+  .field-group label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; }
+  .field-group input, .field-group textarea { width: 100%; box-sizing: border-box; padding: 11px 14px; border-radius: 10px; border: 1.5px solid var(--border); background: var(--bg); color: var(--text); font-size: 14px; font-family: inherit; }
+  .field-group input:focus, .field-group textarea:focus { outline: none; border-color: var(--green); }
+  .field-group textarea { resize: vertical; }
+  .photos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .photo-slot { display: flex; flex-direction: column; gap: 8px; }
+  .photo-preview { width: 100%; aspect-ratio: 1; border-radius: 12px; overflow: hidden; background: var(--bg); border: 1.5px dashed var(--border); display: flex; align-items: center; justify-content: center; }
+  .photo-preview img { width: 100%; height: 100%; object-fit: cover; }
+  .photo-empty { font-size: 32px; opacity: 0.3; }
+  .photo-label { font-size: 12px; font-weight: 600; color: var(--muted); text-align: center; }
+  .photo-upload-btn { display: block; text-align: center; padding: 8px; border-radius: 8px; border: 1.5px solid var(--border); color: var(--text); font-size: 13px; cursor: pointer; }
+  .photo-upload-btn:hover { border-color: var(--green); color: var(--green); }
+  .hours-table { display: flex; flex-direction: column; gap: 10px; }
+  .hours-header { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; padding: 0 4px; }
+  .hours-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; align-items: center; }
+  .hours-day { font-size: 13px; font-weight: 600; }
+  .hours-input { padding: 8px 10px; border-radius: 8px; border: 1.5px solid var(--border); background: var(--bg); color: var(--text); font-size: 13px; width: 100%; box-sizing: border-box; }
+  .hours-input:focus { outline: none; border-color: var(--green); }
+  .dash-save-row { padding: 16px 20px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .btn-save { background: var(--green); color: #fff; border: none; border-radius: 10px; padding: 12px 28px; font-size: 15px; font-weight: 700; cursor: pointer; }
+  .btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
   /* Portal dashboard cards */
   .user-welcome { margin-bottom: 20px; }
   .user-welcome h2 { font-size: 20px; font-weight: 700; }
@@ -426,8 +454,8 @@ window.onFirebaseLogin = async function(user) {
   try {
     const res = await kwbPost('Place/GetEstablishmentByOwnerEmail', { Email: user.email });
     const data = await res.json();
-    if (data && data.DataSource && data.DataSource.Id) {
-      loadDashboard(data.DataSource);
+    if (data && (data.DataSource || data.dataSource) && (data.DataSource || data.dataSource).Id) {
+      loadDashboard(data.DataSource || data.dataSource);
       showScreen('Portal');
     } else {
       showScreen('Claim');
@@ -442,33 +470,147 @@ window.onFirebaseLogout = function() {
 };
 
 // ── DASHBOARD ──
+window._currentRestaurant = null;
+window._pendingPhotos = {};
+
+function parseDayTimes(str) {
+  if (!str) return ['','','','','','',''];
+  return str.split('##');
+}
+function formatDayTimes(arr) { return arr.join('##'); }
+
+function esc(str) {
+  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
 function loadDashboard(restaurant) {
-  document.getElementById('welcomeSub').textContent = restaurant.Name || 'Your restaurant';
-  const features = [
-    { icon: '🎫', name: 'Coupons', tier: 'Free' },
-    { icon: '🚗', name: 'Delivery', tier: 'Free' },
-    { icon: '🏷️', name: 'Tags', tier: 'Free' },
-    { icon: '⭐', name: 'Reviews', tier: 'Premium' },
-    { icon: '📅', name: 'Booking', tier: 'Premium' },
-    { icon: '👨‍🍳', name: "Chef's Pick", tier: 'Premium' },
-    { icon: '📱', name: 'Tablet Menu', tier: 'Premium' },
-    { icon: '📢', name: 'Advertising', tier: 'Premium' },
+  window._currentRestaurant = restaurant;
+  const r = restaurant;
+  document.getElementById('welcomeName').textContent = 'Welcome back!';
+  document.getElementById('welcomeSub').textContent = r.Name || 'Your Restaurant';
+  const openTimes = parseDayTimes(r.OpeningTime);
+  const closeTimes = parseDayTimes(r.ClosingTime);
+  const days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+  const photoSlots = [
+    { label: 'Main Photo', key: 'GoogleMainPhoto', val: r.GoogleMainPhoto || '' },
+    { label: 'Photo 2', key: 'SecondaryPictureUrl', val: r.SecondaryPictureUrl || '' },
+    { label: 'Photo 3', key: 'SecondaryPictureUrl2', val: r.SecondaryPictureUrl2 || '' },
+    { label: 'Photo 4', key: 'SecondaryPictureUrl3', val: r.SecondaryPictureUrl3 || '' },
   ];
   document.getElementById('restaurantCards').innerHTML = `
-    <div class="restaurant-card">
-      <div class="restaurant-name">${restaurant.Name || 'Your Restaurant'}</div>
-      <div class="restaurant-city">${restaurant.City || ''}</div>
-      <div class="features-grid">
-        ${features.map(f => `
-          <div class="feature-card">
-            <div class="feature-icon">${f.icon}</div>
-            <div class="feature-name">${f.name}</div>
-            <span class="feature-badge ${f.tier === 'Free' ? 'badge-free' : 'badge-premium'}">${f.tier}</span>
-          </div>
-        `).join('')}
+    <div class="dash-card">
+      <div class="dash-tabs">
+        <button class="dash-tab active" onclick="switchDashTab('info',this)">Info</button>
+        <button class="dash-tab" onclick="switchDashTab('photos',this)">Photos</button>
+        <button class="dash-tab" onclick="switchDashTab('hours',this)">Hours</button>
+      </div>
+      <div id="dashTab-info" class="dash-tab-content active">
+        <div class="field-group"><label>Restaurant Name</label><input id="d-name" type="text" value="${esc(r.Name)}"></div>
+        <div class="field-group"><label>Phone</label><input id="d-phone" type="text" value="${esc(r.Phone)}"></div>
+        <div class="field-group"><label>Website</label><input id="d-website" type="text" value="${esc(r.Website)}"></div>
+        <div class="field-group"><label>YouTube Link</label><input id="d-youtube" type="text" value="${esc(r.YoutubeLink)}"></div>
+        <div class="field-group"><label>About</label><textarea id="d-about" rows="4">${esc(r.About)}</textarea></div>
+      </div>
+      <div id="dashTab-photos" class="dash-tab-content">
+        <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Upload photos of your restaurant. Best size: 600x600px.</p>
+        <div class="photos-grid">
+          ${photoSlots.map((s,i) => `
+            <div class="photo-slot">
+              <div class="photo-preview" id="photo-preview-${i}">
+                ${s.val ? `<img src="${s.val}" onerror="this.style.display='none'">` : '<div class="photo-empty">📷</div>'}
+              </div>
+              <div class="photo-label">${s.label}</div>
+              <label class="photo-upload-btn">Upload<input type="file" accept="image/*" style="display:none" onchange="handlePhotoUpload(event,${i},'${s.key}')"></label>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+      <div id="dashTab-hours" class="dash-tab-content">
+        <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Set your opening and closing hours.</p>
+        <div class="hours-table">
+          <div class="hours-header"><span>Day</span><span>Opens</span><span>Closes</span></div>
+          ${days.map((day,i) => `
+            <div class="hours-row">
+              <span class="hours-day">${day}</span>
+              <input class="hours-input" id="open-${i}" type="time" value="${openTimes[i]||''}">
+              <input class="hours-input" id="close-${i}" type="time" value="${closeTimes[i]||''}">
+            </div>
+          `).join('')}
+        </div>
+      </div>
+      <div class="dash-save-row">
+        <div id="saveMsg" style="font-size:13px;color:var(--green);display:none;">Saved!</div>
+        <button class="btn-save" onclick="saveRestaurant()">Save Changes</button>
       </div>
     </div>
   `;
+}
+
+function switchDashTab(tab, btn) {
+  document.querySelectorAll('.dash-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.dash-tab-content').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('dashTab-' + tab).classList.add('active');
+}
+
+function handlePhotoUpload(event, slot, key) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    document.getElementById('photo-preview-' + slot).innerHTML = '<img src="' + e.target.result + '">';
+    window._pendingPhotos[slot] = { dataUrl: e.target.result, key };
+  };
+  reader.readAsDataURL(file);
+}
+
+async function saveRestaurant() {
+  const btn = document.querySelector('.btn-save');
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
+  const r = window._currentRestaurant;
+  const photoUrls = {
+    GoogleMainPhoto: r.GoogleMainPhoto || '',
+    SecondaryPictureUrl: r.SecondaryPictureUrl || '',
+    SecondaryPictureUrl2: r.SecondaryPictureUrl2 || '',
+    SecondaryPictureUrl3: r.SecondaryPictureUrl3 || '',
+  };
+  if (Object.keys(window._pendingPhotos).length > 0) {
+    btn.textContent = 'Uploading photos...';
+    for (const [slot, pending] of Object.entries(window._pendingPhotos)) {
+      try {
+        const base64 = pending.dataUrl.split(',')[1];
+        const fd = new FormData();
+        fd.append('image', base64);
+        const res = await fetch('https://api.imgbb.com/1/upload?key=79e49729facfcd3ac251f9e35ba09b68', { method: 'POST', body: fd });
+        const data = await res.json();
+        if (data?.data?.url) photoUrls[pending.key] = data.data.url;
+      } catch(e) { console.error('Photo upload failed', e); }
+    }
+  }
+  const openTimes = [0,1,2,3,4,5,6].map(i => document.getElementById('open-'+i)?.value||'');
+  const closeTimes = [0,1,2,3,4,5,6].map(i => document.getElementById('close-'+i)?.value||'');
+  const payload = {
+    ...r,
+    Name: document.getElementById('d-name')?.value||r.Name,
+    Phone: document.getElementById('d-phone')?.value||r.Phone,
+    Website: document.getElementById('d-website')?.value||r.Website,
+    YoutubeLink: document.getElementById('d-youtube')?.value||r.YoutubeLink,
+    About: document.getElementById('d-about')?.value||r.About,
+    OpeningTime: formatDayTimes(openTimes),
+    ClosingTime: formatDayTimes(closeTimes),
+    ...photoUrls,
+  };
+  try {
+    await kwbPost('KWB-V2/Establishment/UpdateEstablishment', payload);
+    window._pendingPhotos = {};
+    window._currentRestaurant = {...r, ...payload};
+    const msg = document.getElementById('saveMsg');
+    msg.style.display = 'block';
+    setTimeout(() => { msg.style.display = 'none'; }, 3000);
+  } catch(e) { alert('Save failed. Please try again.'); }
+  btn.disabled = false;
+  btn.textContent = 'Save Changes';
 }
 
 // ── CLAIM FLOW ──
@@ -481,7 +623,8 @@ async function searchRestaurants(q) {
     results.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:10px">Searching...</div>';
     try {
       const user = window._currentFirebaseUser;
-      const idToken = window._googleAccessToken || '__KWB_TOKEN__';
+      const idToken = window._googleAccessToken || '';
+      console.log('[KWB] search token:', idToken ? idToken.substring(0,20) : 'NONE');
       const res = await kwbPost('Place/GetPlaces', { Query: q, idToken });
       const data = await res.json();
       console.log('[KWB] response:', JSON.stringify(data).substring(0,150));
@@ -508,7 +651,8 @@ async function submitClaim(placeId, placeName) {
   try {
     await kwbPost('Place/ClaimEstablishment', {
       Email: user.email,
-      PlaceId: placeId
+      PlaceId: placeId,
+      idToken: window._googleAccessToken || ''
     });
     document.getElementById('claimResults').innerHTML = '';
     document.getElementById('claimSearch').value = '';
